@@ -1,6 +1,20 @@
 import tkinter as tk
 from datetime import datetime
 import random
+import os
+import json
+
+today = datetime.now().strftime("%Y-%m-%d")
+
+current_month = datetime.now().strftime("%Y-%m")
+
+SETTINGS_FILE = "save/settings.json"
+
+if os.path.exists(SETTINGS_FILE):
+    with open(SETTINGS_FILE, "r") as f:
+        settings = json.load(f)
+else:
+    settings = {}
 
 root = tk.Tk()
 
@@ -39,6 +53,16 @@ quote_label = tk.Label(
 )
 
 quote_label.pack(pady=10)
+
+SAVE_FILE = "save/daily_log.json"
+
+if os.path.exists(SAVE_FILE):
+    with open(SAVE_FILE, "r") as f:
+        data = json.load(f)
+else:
+    data = {}
+
+checkbox_vars = {}
 
 tasks = [
     "Go to Mass with deepest devotion",
@@ -91,7 +115,14 @@ saints = [
 
 ]
 
-saint = random.choice(saints)
+if current_month in settings:
+    saint = settings[current_month]
+else:
+    saint = random.choice(saints)
+    settings[current_month] = saint
+
+    with open(SETTINGS_FILE, "w") as f:
+        json.dump(settings, f, indent=4)
 
 saint_frame = tk.Frame(
     root,
@@ -139,6 +170,15 @@ checklist_frame = tk.Frame(root)
 
 checklist_frame.pack(pady=20)
 
+def save_state():
+    data[today] = {}
+
+    for task, var in checkbox_vars.items():
+        data[today][task] = var.get()
+
+    with open(SAVE_FILE, "w") as f:
+        json.dump(data, f, indent=4)
+
 for task in tasks:
 
     var = tk.BooleanVar()
@@ -147,9 +187,27 @@ for task in tasks:
         checklist_frame,
         text=task,
         variable=var,
-        font=("Times",13)
+        font=("Times", 13)
     )
 
     checkbox.pack(anchor="w")
+
+    checkbox_vars[task] = var
+
+if today in data:
+    saved = data[today]
+
+    for task in checkbox_vars:
+        if task in saved:
+            checkbox_vars[task].set(saved[task])
+
+save_button = tk.Button(
+    root,
+    text="Save Today",
+    command=save_state,
+    font=("Times", 12)
+)
+
+save_button.pack(pady=10)
 
 root.mainloop()
