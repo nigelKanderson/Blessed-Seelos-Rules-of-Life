@@ -1,10 +1,17 @@
 {
+    "last_open_date": "2026-06-19",
     "2026-06": {
-        "name": "St. Francis de Sales",
+        "name": "St. Teresa of Calcutta",
         "virtues": [
-            "Gentleness",
-            "Patience",
-            "Charity"
+            "Compassion",
+            "Service",
+            "Perseverance"
         ]
-    }
+    },
+    "streaks": {
+        "rosary": 0,
+        "mass": 0,
+        "reading": 0
+    },
+    "last_streak_date": "2026-06-19"
 }
