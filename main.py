@@ -13,6 +13,15 @@ current_month = datetime.now().strftime("%Y-%m")
 today_mmdd = datetime.now().strftime("%m-%d")
 
 # =========================
+# COLORS (SIMPLE FIXED STYLE)
+# =========================
+BG = "#F5F1E8"
+CARD = "#FFFFFF"
+TEXT = "#2B2B2B"
+ACCENT = "#6B1F2B"
+GOLD = "#C8A24A"
+
+# =========================
 # FILES
 # =========================
 SAVE_DIR = "save"
@@ -21,9 +30,6 @@ SETTINGS_FILE = os.path.join(SAVE_DIR, "settings.json")
 
 os.makedirs(SAVE_DIR, exist_ok=True)
 
-# =========================
-# SAFE JSON LOADER
-# =========================
 def load_json(path):
     if os.path.exists(path):
         try:
@@ -45,21 +51,11 @@ if last_open_date != today_date:
     data[today_date] = {}
     settings["last_open_date"] = today_date
 
-    with open(SAVE_FILE, "w") as f:
-        json.dump(data, f, indent=4)
-
-    with open(SETTINGS_FILE, "w") as f:
-        json.dump(settings, f, indent=4)
-
 # =========================
-# STREAK SYSTEM INIT
+# STREAKS
 # =========================
 if "streaks" not in settings:
-    settings["streaks"] = {
-        "rosary": 0,
-        "mass": 0,
-        "reading": 0
-    }
+    settings["streaks"] = {"mass": 0, "rosary": 0, "reading": 0}
 
 if "last_streak_date" not in settings:
     settings["last_streak_date"] = today_date
@@ -71,23 +67,19 @@ streak_map = {
 }
 
 def update_streaks():
-    last_date = settings.get("last_streak_date")
-
-    if last_date == today_date:
+    last = settings.get("last_streak_date")
+    if last == today_date:
         return
 
-    previous = data.get(last_date, {})
+    previous = data.get(last, {})
 
-    for task, category in streak_map.items():
+    for task, cat in streak_map.items():
         if previous.get(task, False):
-            settings["streaks"][category] += 1
+            settings["streaks"][cat] += 1
         else:
-            settings["streaks"][category] = 0
+            settings["streaks"][cat] = 0
 
     settings["last_streak_date"] = today_date
-
-    with open(SETTINGS_FILE, "w") as f:
-        json.dump(settings, f, indent=4)
 
 # =========================
 # SAINTS
@@ -104,9 +96,6 @@ if current_month in settings:
 else:
     saint = random.choice(saints)
     settings[current_month] = saint
-
-    with open(SETTINGS_FILE, "w") as f:
-        json.dump(settings, f, indent=4)
 
 # =========================
 # TASKS
@@ -132,126 +121,156 @@ feasts = {
     "03-19": "St. Joseph",
     "03-25": "Annunciation",
     "06-19": "Sacred Heart of Jesus",
-    "08-15": "Assumption of Mary",
+    "08-15": "Assumption",
     "10-02": "Guardian Angels",
     "11-01": "All Saints",
     "12-08": "Immaculate Conception",
     "12-25": "Nativity of the Lord"
 }
 
-def get_season(month):
+def season(month):
     if month in [11, 12]:
         return "Advent / Transition"
     elif month in [3, 4]:
         return "Lent / Easter"
-    else:
-        return "Ordinary Time"
+    return "Ordinary Time"
 
-season_text = get_season(datetime.now().month)
+season_text = season(datetime.now().month)
 today_feast = feasts.get(today_mmdd)
 
 # =========================
-# TKINTER ROOT
+# ROOT
 # =========================
 root = tk.Tk()
 root.title("Seelos Rule of Life")
 root.geometry("700x800")
+root.configure(bg=BG)
 
 # =========================
 # HEADER
 # =========================
-header = tk.Frame(root)
-header.pack(pady=10)
+header = tk.Frame(root, bg=CARD, bd=2, relief="ridge")
+header.pack(pady=10, fill="x")
 
-tk.Label(header, text="Blessed Francis Xavier Seelos", font=("Times", 20)).pack()
-tk.Label(header, text=today_display, font=("Times", 14)).pack()
+tk.Label(
+    header,
+    text="Blessed Francis Xavier Seelos",
+    font=("Times", 20, "bold"),
+    bg=CARD,
+    fg=ACCENT
+).pack()
+
+tk.Label(
+    header,
+    text=today_display,
+    font=("Times", 14),
+    bg=CARD,
+    fg=TEXT
+).pack()
 
 # =========================
-# CALENDAR UI
+# CALENDAR
 # =========================
-calendar_frame = tk.Frame(root)
-calendar_frame.pack(pady=10)
+calendar = tk.Frame(root, bg=CARD, bd=2, relief="ridge")
+calendar.pack(pady=10, fill="x")
 
-tk.Label(calendar_frame, text=f"Season: {season_text}", font=("Times", 13, "italic")).pack()
+tk.Label(calendar, text=f"Season: {season_text}", bg=CARD, fg=TEXT).pack()
 
 if today_feast:
-    tk.Label(calendar_frame, text=f"Feast: {today_feast}", font=("Times", 13, "bold")).pack()
+    tk.Label(calendar, text=f"Feast: {today_feast}", bg=CARD, fg=ACCENT).pack()
 
 # =========================
-# SAINT UI
+# SAINT
 # =========================
-saint_frame = tk.Frame(root, relief="ridge", borderwidth=3)
-saint_frame.pack(pady=10, padx=10, fill="x")
-
-tk.Label(saint_frame, text="Saint of the Month", font=("Times", 16, "bold")).pack()
-tk.Label(saint_frame, text=saint["name"], font=("Times", 15)).pack()
+saint_frame = tk.Frame(root, bg=CARD, bd=2, relief="ridge")
+saint_frame.pack(pady=10, fill="x")
 
 tk.Label(
     saint_frame,
-    text="\n".join(["• " + v for v in saint["virtues"]]),
-    font=("Times", 13)
+    text="Saint of the Month",
+    font=("Times", 16, "bold"),
+    bg=CARD,
+    fg=ACCENT
+).pack()
+
+tk.Label(
+    saint_frame,
+    text=saint["name"],
+    font=("Times", 15),
+    bg=CARD,
+    fg=TEXT
+).pack()
+
+tk.Label(
+    saint_frame,
+    text="\n".join("• " + v for v in saint["virtues"]),
+    bg=CARD,
+    fg=TEXT
 ).pack()
 
 # =========================
 # DASHBOARD
 # =========================
-dashboard = tk.Frame(root)
-dashboard.pack(pady=10)
+dashboard = tk.Frame(root, bg=CARD, bd=2, relief="ridge")
+dashboard.pack(pady=10, fill="x")
 
-dashboard_label = tk.Label(dashboard, text="Today's Completion: 0%", font=("Times", 14, "bold"))
-dashboard_label.pack()
+dash_label = tk.Label(dashboard, text="Today: 0%", bg=CARD, fg=TEXT)
+dash_label.pack()
 
-progress_bar = tk.Label(dashboard, text="□□□□□□□□□□", font=("Courier", 16))
-progress_bar.pack()
+bar = tk.Label(dashboard, font=("Courier", 16), bg=CARD, fg=GOLD)
+bar.pack()
 
 def update_dashboard():
-    completed = sum(var.get() for var in checkbox_vars.values())
+    completed = sum(v.get() for v in checkbox_vars.values())
     percent = int((completed / len(tasks)) * 100)
 
-    dashboard_label.config(text=f"Today's Completion: {percent}%")
-
-    filled = percent // 10
-    progress_bar.config(text="■" * filled + "□" * (10 - filled))
+    dash_label.config(text=f"Today: {percent}%")
+    bar.config(text="█" * (percent // 10) + "░" * (10 - percent // 10))
 
 # =========================
-# STREAK UI
+# STREAKS
 # =========================
-streak_frame = tk.Frame(root)
-streak_frame.pack(pady=10)
+streak_frame = tk.Frame(root, bg=CARD, bd=2, relief="ridge")
+streak_frame.pack(pady=10, fill="x")
 
-tk.Label(streak_frame, text="Streaks", font=("Times", 16, "bold")).pack()
+tk.Label(
+    streak_frame,
+    text="Streaks",
+    font=("Times", 16, "bold"),
+    bg=CARD,
+    fg=ACCENT
+).pack()
 
-rosary_label = tk.Label(streak_frame, font=("Times", 13))
-rosary_label.pack()
+rosary = tk.Label(streak_frame, bg=CARD, fg=TEXT)
+mass = tk.Label(streak_frame, bg=CARD, fg=TEXT)
+reading = tk.Label(streak_frame, bg=CARD, fg=TEXT)
 
-mass_label = tk.Label(streak_frame, font=("Times", 13))
-mass_label.pack()
-
-reading_label = tk.Label(streak_frame, font=("Times", 13))
-reading_label.pack()
+rosary.pack()
+mass.pack()
+reading.pack()
 
 def update_streak_display():
-    rosary_label.config(text=f"Rosary: 🔥 {settings['streaks']['rosary']} days")
-    mass_label.config(text=f"Mass: 🔥 {settings['streaks']['mass']} days")
-    reading_label.config(text=f"Reading: 🔥 {settings['streaks']['reading']} days")
+    rosary.config(text=f"Rosary: 🔥 {settings['streaks']['rosary']}")
+    mass.config(text=f"Mass: 🔥 {settings['streaks']['mass']}")
+    reading.config(text=f"Reading: 🔥 {settings['streaks']['reading']}")
 
 # =========================
 # CHECKLIST
 # =========================
-checklist = tk.Frame(root)
-checklist.pack(pady=10)
+checklist = tk.Frame(root, bg=CARD, bd=2, relief="ridge")
+checklist.pack(pady=10, fill="x")
 
 def save_state():
     data[today_date] = {}
 
-    for task, var in checkbox_vars.items():
-        data[today_date][task] = var.get()
-
-    with open(SAVE_FILE, "w") as f:
-        json.dump(data, f, indent=4)
+    for t, v in checkbox_vars.items():
+        data[today_date][t] = v.get()
 
 def on_close():
     save_state()
+
+    with open(SAVE_FILE, "w") as f:
+        json.dump(data, f, indent=4)
 
     with open(SETTINGS_FILE, "w") as f:
         json.dump(settings, f, indent=4)
@@ -260,40 +279,38 @@ def on_close():
 
 root.protocol("WM_DELETE_WINDOW", on_close)
 
-for task in tasks:
-    var = tk.BooleanVar()
+for t in tasks:
+    v = tk.BooleanVar()
 
     cb = tk.Checkbutton(
         checklist,
-        text=task,
-        variable=var,
-        font=("Times", 13),
+        text=t,
+        variable=v,
+        bg=CARD,
+        fg=TEXT,
+        selectcolor=GOLD,
+        activebackground=CARD,
         command=update_dashboard
     )
-
     cb.pack(anchor="w")
-    checkbox_vars[task] = var
+
+    checkbox_vars[t] = v
 
 # =========================
 # RESTORE STATE
 # =========================
 if today_date in data:
     saved = data[today_date]
-    for task, var in checkbox_vars.items():
-        if task in saved:
-            var.set(saved[task])
+    for t, v in checkbox_vars.items():
+        if t in saved:
+            v.set(saved[t])
 
 # =========================
-# INIT SYSTEMS
+# INIT
 # =========================
-update_dashboard()
 update_streaks()
+update_dashboard()
 update_streak_display()
-
-# =========================
-# SAVE BUTTON
-# =========================
-tk.Button(root, text="Save Today", command=save_state, font=("Times", 12)).pack(pady=10)
 
 # =========================
 # START
