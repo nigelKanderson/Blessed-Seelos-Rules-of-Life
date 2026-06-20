@@ -21,6 +21,7 @@ TEXT = "#2B2B2B"
 ACCENT = "#6B1F2B"
 GOLD = "#C8A24A"
 
+
 # =========================
 # FILES
 # =========================
@@ -143,13 +144,34 @@ today_feast = feasts.get(today_mmdd)
 # =========================
 root = tk.Tk()
 root.title("Seelos Rule of Life")
-root.geometry("700x800")
+root.geometry("750x900")
 root.configure(bg=BG)
+
+# Canvas
+canvas = tk.Canvas(root, bg=BG, highlightthickness=0)
+canvas.pack(side="left", fill="both", expand=True)
+
+# Scrollbar
+scrollbar = tk.Scrollbar(root, orient="vertical", command=canvas.yview)
+scrollbar.pack(side="right", fill="y")
+
+canvas.configure(yscrollcommand=scrollbar.set)
+
+# Main frame
+main_frame = tk.Frame(canvas, bg=BG)
+
+canvas.create_window((0, 0), window=main_frame, anchor="nw")
+
+# Update scroll region automatically
+main_frame.bind(
+    "<Configure>",
+    lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+)
 
 # =========================
 # HEADER
 # =========================
-header = tk.Frame(root, bg=CARD, bd=2, relief="ridge")
+header = tk.Frame(main_frame, bg=CARD, bd=2, relief="ridge")
 header.pack(pady=10, fill="x")
 
 tk.Label(
@@ -171,7 +193,7 @@ tk.Label(
 # =========================
 # CALENDAR
 # =========================
-calendar = tk.Frame(root, bg=CARD, bd=2, relief="ridge")
+calendar = tk.Frame(main_frame, bg=CARD, bd=2, relief="ridge")
 calendar.pack(pady=10, fill="x")
 
 tk.Label(calendar, text=f"Season: {season_text}", bg=CARD, fg=TEXT).pack()
@@ -179,10 +201,27 @@ tk.Label(calendar, text=f"Season: {season_text}", bg=CARD, fg=TEXT).pack()
 if today_feast:
     tk.Label(calendar, text=f"Feast: {today_feast}", bg=CARD, fg=ACCENT).pack()
 
+
+# =========================
+# CONFESSION TRACKER
+# =========================
+if "last_confession_date" not in settings:
+    settings["last_confession_date"] = today_date
+
+def get_confession_days():
+    last = settings.get("last_confession_date", today_date)
+
+    last_dt = datetime.strptime(last, "%Y-%m-%d")
+    today_dt = datetime.strptime(today_date, "%Y-%m-%d")
+
+    return (today_dt - last_dt).days
+
+settings = load_json(SETTINGS_FILE)
+
 # =========================
 # SAINT
 # =========================
-saint_frame = tk.Frame(root, bg=CARD, bd=2, relief="ridge")
+saint_frame = tk.Frame(main_frame, bg=CARD, bd=2, relief="ridge")
 saint_frame.pack(pady=10, fill="x")
 
 tk.Label(
@@ -211,7 +250,7 @@ tk.Label(
 # =========================
 # DASHBOARD
 # =========================
-dashboard = tk.Frame(root, bg=CARD, bd=2, relief="ridge")
+dashboard = tk.Frame(main_frame, bg=CARD, bd=2, relief="ridge")
 dashboard.pack(pady=10, fill="x")
 
 dash_label = tk.Label(dashboard, text="Today: 0%", bg=CARD, fg=TEXT)
@@ -230,7 +269,7 @@ def update_dashboard():
 # =========================
 # STREAKS
 # =========================
-streak_frame = tk.Frame(root, bg=CARD, bd=2, relief="ridge")
+streak_frame = tk.Frame(main_frame, bg=CARD, bd=2, relief="ridge")
 streak_frame.pack(pady=10, fill="x")
 
 tk.Label(
@@ -255,9 +294,55 @@ def update_streak_display():
     reading.config(text=f"Reading: 🔥 {settings['streaks']['reading']}")
 
 # =========================
+# CONFESSION
+# =========================
+confession_frame = tk.Frame(main_frame, bg=CARD, bd=2, relief="ridge")
+confession_frame.pack(pady=10, fill="x")
+
+tk.Label(
+    confession_frame,
+    text="✝ Confession",
+    font=("Times", 16, "bold"),
+    bg=CARD,
+    fg=ACCENT
+).pack()
+
+confession_label = tk.Label(
+    confession_frame,
+    font=("Times", 14),
+    bg=CARD,
+    fg=TEXT
+)
+
+confession_label.pack(pady=5)
+
+
+def update_confession():
+    days = get_confession_days()
+
+    confession_label.config(
+        text=f"Days Since Last Confession: {days}"
+    )
+
+
+def reset_confession():
+    settings["last_confession_date"] = today_date
+
+    update_confession()
+
+
+tk.Button(
+    confession_frame,
+    text="I Went to Confession Today",
+    command=reset_confession,
+    bg=CARD,
+    fg=TEXT
+).pack(pady=5)
+
+# =========================
 # CHECKLIST
 # =========================
-checklist = tk.Frame(root, bg=CARD, bd=2, relief="ridge")
+checklist = tk.Frame(main_frame, bg=CARD, bd=2, relief="ridge")
 checklist.pack(pady=10, fill="x")
 
 def save_state():
@@ -311,6 +396,19 @@ if today_date in data:
 update_streaks()
 update_dashboard()
 update_streak_display()
+update_confession()
+
+save_button = tk.Button(
+    main_frame,
+    text="Save Today",
+    command=save_state,
+    bg=CARD,
+    fg=TEXT
+)
+
+save_button.pack(pady=10)
+
+
 
 # =========================
 # START
