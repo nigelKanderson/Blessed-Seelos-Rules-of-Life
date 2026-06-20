@@ -1,17 +1,29 @@
 {
-    "last_open_date": "2026-06-19",
+  "last_open_date": "2026-06-20",
+  "2026-06": {
+    "name": "St. Teresa of Calcutta",
+    "virtues": [
+      "Compassion",
+      "Service",
+      "Perseverance"
+    ]
+  },
+  "streaks": {
+    "rosary": 0,
+    "mass": 0,
+    "reading": 0
+  },
+  "last_streak_date": "2026-06-20",
+  "last_conf_date": null,
+  "confessions": [],
+  "saints": {
     "2026-06": {
-        "name": "St. Teresa of Calcutta",
-        "virtues": [
-            "Compassion",
-            "Service",
-            "Perseverance"
-        ]
-    },
-    "streaks": {
-        "rosary": 0,
-        "mass": 0,
-        "reading": 0
-    },
-    "last_streak_date": "2026-06-19"
+      "name": "St. Augustine",
+      "virtues": [
+        "Conversion",
+        "Intellect",
+        "Zeal"
+      ]
+    }
+  }
 }

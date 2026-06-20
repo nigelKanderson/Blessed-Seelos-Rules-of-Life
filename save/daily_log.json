@@ -1,12 +1,22 @@
 {
-    "2026-06-19": {
-        "Go to Mass with deepest devotion": false,
-        "Reflect upon your main failing": false,
-        "Spiritual reading": false,
-        "Pray the Rosary": false,
-        "Visit the Blessed Sacrament": false,
-        "Meditate on the Passion of Christ": false,
-        "Evening prayer and examination of conscience": false,
-        "Begin and end activities with a Hail Mary": false
-    }
+  "2026-06-19": {
+    "Go to Mass with deepest devotion": false,
+    "Reflect upon your main failing": false,
+    "Spiritual reading": false,
+    "Pray the Rosary": false,
+    "Visit the Blessed Sacrament": false,
+    "Meditate on the Passion of Christ": false,
+    "Evening prayer and examination of conscience": false,
+    "Begin and end activities with a Hail Mary": false
+  },
+  "2026-06-20": {
+    "Go to Mass with deepest devotion": false,
+    "Reflect upon your main failing": false,
+    "Spiritual reading": false,
+    "Pray the Rosary": false,
+    "Visit the Blessed Sacrament": false,
+    "Meditate on the Passion of Christ": false,
+    "Evening prayer and examination of conscience": false,
+    "Begin and end activities with a Hail Mary": false
+  }
 }
