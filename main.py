@@ -71,11 +71,17 @@ SAINT = settings["saints"][MONTH_KEY]
 
 FEASTS = {
     "01-01": "Solemnity of Mary",
+    "01-28": "Saint Thomas Aquinas",
     "03-19": "St. Joseph",
     "03-25": "Annunciation",
+    "06-13": "Saint Anthony of Padua",
     "06-19": "Sacred Heart of Jesus",
+    "06-23": "Corpus Christi",
+    "07-03": "Saint Thomas the Apostle",
+    "07-16": "Our Lady of Mount Carmel",
     "08-15": "Assumption",
     "10-02": "Guardian Angels",
+    "10-05": "Saint Faustina",
     "11-01": "All Saints",
     "12-08": "Immaculate Conception",
     "12-25": "Nativity of the Lord",
@@ -224,8 +230,11 @@ banner.pack(fill="x")
 tk.Label(banner, text="✠ Blessed Francis Xavier Seelos ✠",
          font=serif_lg, bg=CRIMSON, fg=BANNER_TEXT).pack(pady=(20, 4))
 
+tk.Label(banner, text="A Practical Guide to Holiness",
+         font=serif_md, bg=CRIMSON, fg=GOLD_LITE).pack(pady=(2, 0))
+
 tk.Label(banner, text=TODAY_DISP,
-         font=serif_md, bg=CRIMSON, fg=BANNER_DIM).pack()
+         font=sans_sm, bg=CRIMSON, fg=BANNER_DIM).pack()
 
 meta_row = tk.Frame(banner, bg=CRIMSON)
 meta_row.pack(pady=(8, 20))
