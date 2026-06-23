@@ -1,5 +1,5 @@
 {
-  "last_open_date": "2026-06-20",
+  "last_open_date": "2026-06-23",
   "2026-06": {
     "name": "St. Teresa of Calcutta",
     "virtues": [
@@ -9,11 +9,11 @@
     ]
   },
   "streaks": {
-    "rosary": 0,
-    "mass": 0,
-    "reading": 0
+    "rosary": 1,
+    "mass": 1,
+    "reading": 1
   },
-  "last_streak_date": "2026-06-20",
+  "last_streak_date": "2026-06-23",
   "last_conf_date": null,
   "confessions": [],
   "saints": {

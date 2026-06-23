@@ -1,4 +1,5 @@
 import tkinter as tk
+import threading
 from tkinter import ttk, font as tkfont
 from datetime import datetime, timedelta
 import calendar
@@ -71,17 +72,11 @@ SAINT = settings["saints"][MONTH_KEY]
 
 FEASTS = {
     "01-01": "Solemnity of Mary",
-    "01-28": "Saint Thomas Aquinas",
     "03-19": "St. Joseph",
     "03-25": "Annunciation",
-    "06-13": "Saint Anthony of Padua",
     "06-19": "Sacred Heart of Jesus",
-    "06-23": "Corpus Christi",
-    "07-03": "Saint Thomas the Apostle",
-    "07-16": "Our Lady of Mount Carmel",
     "08-15": "Assumption",
     "10-02": "Guardian Angels",
-    "10-05": "Saint Faustina",
     "11-01": "All Saints",
     "12-08": "Immaculate Conception",
     "12-25": "Nativity of the Lord",
@@ -653,12 +648,43 @@ save_btn = tk.Button(
 save_btn.pack(pady=(8, 24))
 
 # =========================
+# HAIL MARY REMINDER
+# =========================
+def hail_mary_reminder():
+    popup = tk.Toplevel(root)
+    popup.title("✠ Hail Mary")
+    popup.configure(bg=CRIMSON_DARK)
+    popup.geometry("380x160")
+    popup.resizable(False, False)
+    popup.lift()
+    popup.focus_force()
+    tk.Label(popup, text="✠  Hail Mary",
+             font=("Georgia", 15, "bold"), bg=CRIMSON_DARK, fg="#FFFFFF").pack(pady=(22, 6))
+    tk.Label(popup,
+             text="Hail Mary, full of grace, the Lord is with thee...",
+             font=("Georgia", 12), bg=CRIMSON_DARK, fg=GOLD_LITE,
+             justify="center").pack()
+    dismiss = tk.Label(popup, text="— tap anywhere to dismiss —", font=("Helvetica", 9),
+             bg=CRIMSON_DARK, fg=BANNER_DIM)
+    dismiss.pack(pady=(10, 0))
+    popup.bind("<Button-1>", lambda e: popup.destroy())
+    popup.after(20000, lambda: popup.destroy() if popup.winfo_exists() else None)
+
+    # schedule next reminder
+    _reminder_timer[0] = root.after(3600000, hail_mary_reminder)
+
+_reminder_timer = [None]
+
+# =========================
 # INIT
 # =========================
 root.after(100, update_progress_bar)
+root.after(3600000, hail_mary_reminder)  # first reminder after 1 hour
 
 def on_close():
     save_all()
+    if _reminder_timer[0]:
+        root.after_cancel(_reminder_timer[0])
     root.destroy()
 
 root.protocol("WM_DELETE_WINDOW", on_close)
