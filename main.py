@@ -645,7 +645,63 @@ save_btn = tk.Button(
     activebackground=GOLD_FAINT, activeforeground=CRIMSON_DARK,
     command=save_all
 )
-save_btn.pack(pady=(8, 24))
+save_btn.pack(pady=(8, 8))
+
+reset_btn = tk.Label(
+    main, text="Reset All Data",
+    font=("Helvetica", 10), bg=PARCHMENT, fg=TEXT_LIGHT,
+    cursor="hand2", pady=4
+)
+reset_btn.pack(pady=(0, 24))
+reset_btn.bind("<Button-1>", lambda e: reset_all_data())
+reset_btn.bind("<Enter>", lambda e: reset_btn.configure(fg=CRIMSON))
+reset_btn.bind("<Leave>", lambda e: reset_btn.configure(fg=TEXT_LIGHT))
+
+# =========================
+# RESET DATA
+# =========================
+def reset_all_data():
+    confirm = tk.Toplevel(root)
+    confirm.title("Reset Data")
+    confirm.configure(bg=PARCHMENT)
+    confirm.geometry("340x150")
+    confirm.resizable(False, False)
+    confirm.lift()
+    confirm.focus_force()
+
+    tk.Label(confirm, text="Reset all log data?",
+             font=("Georgia", 13, "bold"), bg=PARCHMENT, fg=CRIMSON).pack(pady=(22, 6))
+    tk.Label(confirm, text="This will erase all daily logs, streaks, and confession history. This cannot be undone.",
+             font=("Helvetica", 10), bg=PARCHMENT, fg=TEXT_MID, justify="center").pack()
+
+    btn_row = tk.Frame(confirm, bg=PARCHMENT)
+    btn_row.pack(pady=(14, 0))
+
+    def do_reset():
+        global data
+        data.clear()
+        data[TODAY] = {}
+        settings["streaks"] = {"mass": 0, "rosary": 0, "reading": 0}
+        settings["confessions"] = []
+        settings["last_conf_date"] = None
+        settings["last_streak_date"] = TODAY
+        for v in checkbox_vars.values():
+            v.set(False)
+        update_progress_bar()
+        refresh_streaks()
+        save_all()
+        build_confession_tab()
+        confirm.destroy()
+
+    tk.Label(btn_row, text="  Yes, reset  ",
+             font=("Helvetica", 11, "bold"), bg=CRIMSON_DARK, fg="#FFFFFF",
+             cursor="hand2", pady=8, padx=12, relief="flat").pack(side="left", padx=(0, 8))
+    btn_row.winfo_children()[-1].bind("<Button-1>", lambda e: do_reset())
+
+    tk.Label(btn_row, text="  Cancel  ",
+             font=("Helvetica", 11), bg=BORDER, fg=TEXT_DARK,
+             cursor="hand2", pady=8, padx=12, relief="flat").pack(side="left")
+    btn_row.winfo_children()[-1].bind("<Button-1>", lambda e: confirm.destroy())
 
 # =========================
 # HAIL MARY REMINDER
